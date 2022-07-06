@@ -28,35 +28,32 @@
     <input type="submit" value="Add" />
   </form>
 </template>
-
-<script>
+<script setup lang="ts">
 import { useMeditationStore } from "@/stores/meditationStore";
 
-export default {
-  name: "MeditationFormView",
-  emits: ["submit-meditation"],
-  setup() {
-    const store = useMeditationStore();
+import { onBeforeMount, reactive } from "vue";
 
-    return {
-      store,
-    };
-  },
-  data() {
-    return {
-      meditation: null,
-    };
-  },
-  methods: {
-    addMeditation() {
-      this.$emit("submit-meditation");
-    },
-  },
-  beforeMount() {
-    console.log(this.store);
-    this.meditation = this.store.meditation;
-  },
-};
+import type { Meditation } from "@/types";
+
+const emit = defineEmits(["submit-meditation"]);
+
+const store = useMeditationStore();
+
+const meditation: Meditation = reactive({
+  type: "",
+  duration: 0,
+  template: [],
+});
+
+onBeforeMount(() => {
+  meditation.type = store.meditation.type;
+  meditation.duration = store.meditation.duration;
+  meditation.template = store.meditation.template;
+});
+
+function addMeditation() {
+  emit("submit-meditation");
+}
 </script>
 
 <style scoped></style>
