@@ -17,18 +17,24 @@
 </template>
 <script setup lang="ts">
 import { reactive, onBeforeMount } from "vue";
+import { useDaysStore } from "@/stores/daysStore";
+
 import type { Date } from "@/types";
 
+const store = useDaysStore();
+
 const date: Date = reactive({ day: "", month: "", year: "" });
+
+const emit = defineEmits<{ (e: "add-day"): void }>();
 onBeforeMount(() => {
   const newDate = new Date();
   date.day = newDate.getDate().toString();
   date.month = (newDate.getMonth() + 1).toString();
   date.year = newDate.getFullYear().toString();
 });
-const emit = defineEmits<{ (e: "add-day", date: Date): void }>();
 function submitDay() {
-  emit("add-day", date);
+  store.addDay({ date: date, meditations: [] });
+  emit("add-day");
 }
 </script>
 

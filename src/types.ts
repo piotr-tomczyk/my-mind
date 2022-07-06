@@ -10,7 +10,7 @@ export interface Day {
 export interface Meditation {
   type: string;
   duration: number;
-  template: Template[];
+  templates: Template[];
 }
 export interface Template {
   title: string;

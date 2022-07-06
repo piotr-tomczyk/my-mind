@@ -15,6 +15,7 @@
     <MeditationFormView
       v-if="showMeditationForm"
       @submit-meditation="submitMeditation"
+      :index-of-day="indexOfDay"
     ></MeditationFormView>
   </div>
 </template>
@@ -30,17 +31,12 @@ const props = defineProps<{
   indexOfDay: number;
 }>();
 
-const emit = defineEmits<{
-  (e: "add-meditation", indexOfDay: number): void;
-}>();
-
 const showMeditationForm: Ref<boolean> = ref(false);
 
 function changeShowMeditationFormTrigger() {
   showMeditationForm.value = !showMeditationForm.value;
 }
 function submitMeditation() {
-  emit("add-meditation", props.indexOfDay);
   showMeditationForm.value = false;
 }
 </script>
