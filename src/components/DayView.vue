@@ -18,37 +18,31 @@
     ></MeditationFormView>
   </div>
 </template>
-
-<script>
+<script setup lang="ts">
 import MeditationFormView from "./MeditationFormView.vue";
 import MeditationView from "./MeditationView.vue";
+import { ref } from "vue";
+import type { Ref } from "vue";
+import type { Day } from "@/types";
 
-export default {
-  name: "DayView",
-  components: {
-    MeditationFormView,
-    MeditationView,
-  },
-  emits: ["add-meditation"],
-  props: {
-    day: Object,
-    indexOfDay: Number,
-  },
-  data() {
-    return {
-      showMeditationForm: false,
-    };
-  },
-  methods: {
-    changeShowMeditationFormTrigger() {
-      this.showMeditationForm = !this.showMeditationForm;
-    },
-    submitMeditation() {
-      this.$emit("add-meditation", this.indexOfDay);
-      this.showMeditationForm = false;
-    },
-  },
-};
+const props = defineProps<{
+  day: Day;
+  indexOfDay: number;
+}>();
+
+const emit = defineEmits<{
+  (e: "add-meditation", indexOfDay: number): void;
+}>();
+
+const showMeditationForm: Ref<boolean> = ref(false);
+
+function changeShowMeditationFormTrigger() {
+  showMeditationForm.value = !showMeditationForm.value;
+}
+function submitMeditation() {
+  emit("add-meditation", props.indexOfDay);
+  showMeditationForm.value = false;
+}
 </script>
 
 <style scoped></style>
