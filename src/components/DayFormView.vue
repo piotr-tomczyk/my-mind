@@ -15,30 +15,21 @@
     <input type="submit" value="Add" />
   </form>
 </template>
+<script setup lang="ts">
+import { reactive, onBeforeMount } from "vue";
+import type { Date } from "@/types";
 
-<script>
-export default {
-  name: "DayFormView",
-  emit: ["add-day"],
-  data: function () {
-    return {
-      date: null,
-    };
-  },
-  methods: {
-    submitDay() {
-      this.$emit("add-day", this.date);
-    },
-  },
-  beforeMount() {
-    const date = new Date();
-    this.date = {
-      day: date.getDate().toString(),
-      month: date.getMonth().toString(),
-      year: date.getFullYear().toString(),
-    };
-  },
-};
+const date: Date = reactive({ day: "", month: "", year: "" });
+onBeforeMount(() => {
+  const newDate = new Date();
+  date.day = newDate.getDate().toString();
+  date.month = (newDate.getMonth() + 1).toString();
+  date.year = newDate.getFullYear().toString();
+});
+const emit = defineEmits<{ (e: "add-day", date: Date): void }>();
+function submitDay() {
+  emit("add-day", date);
+}
 </script>
 
 <style scoped></style>
