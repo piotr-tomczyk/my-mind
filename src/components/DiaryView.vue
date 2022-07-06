@@ -11,83 +11,65 @@
     <DayFormView v-if="showDaysForm" @add-day="addDay"></DayFormView>
   </div>
 </template>
-
-<script>
+<script setup lang="ts">
 import DayView from "./DayView.vue";
 import DayFormView from "./DayFormView.vue";
+
 import { useMeditationStore } from "@/stores/meditationStore";
-import { DayContainer } from "@/utils";
+import { onMounted, reactive, ref } from "vue";
 
-export default {
-  name: "DiaryView",
-  components: {
-    DayView,
-    DayFormView,
-  },
-  setup() {
-    const store = useMeditationStore();
+import type { Ref } from "vue";
+import type { Day, Date, LocalStorageDays } from "@/types";
 
-    return {
-      store,
-    };
-  },
-  data() {
-    return {
-      days: [],
-      showDaysForm: false,
-      showMeditationForm: false,
-    };
-  },
-  methods: {
-    changeShowDayFormTrigger() {
-      this.showDaysForm = !this.showDaysForm;
-    },
-    addDay(dayToAdd) {
-      const foundDays = this.days.filter((day) => {
-        if (
-          day.date.day === dayToAdd.day &&
-          day.date.month === dayToAdd.month &&
-          day.date.year === dayToAdd.year
-        ) {
-          return true;
-        }
-        return false;
-      });
-      if (foundDays.length === 0) {
-        this.days.push(new DayContainer(JSON.parse(JSON.stringify(dayToAdd))));
-        this.saveDaysToLocalStorage();
-        this.changeShowDayFormTrigger();
-      }
-    },
-    addMeditation(index) {
-      this.days[index].meditations.push(
-        JSON.parse(JSON.stringify(this.store.meditation))
-      );
-      this.store.resetMeditation();
-      console.log(this.store.meditation);
-      this.saveDaysToLocalStorage();
-    },
-    saveDaysToLocalStorage() {
-      let localDays = localStorage.getItem("days");
-      if (localDays) {
-        localDays = JSON.parse(localDays);
-        localDays.days = this.days;
-      } else {
-        localDays = { days: this.days };
-      }
-      localStorage.setItem("days", JSON.stringify(localDays));
-    },
-    getDaysFromLocalStorage() {
-      const localDays = localStorage.getItem("days");
-      if (localDays) {
-        this.days = JSON.parse(localDays).days;
-      }
-    },
-  },
-  mounted() {
-    this.getDaysFromLocalStorage();
-  },
-};
+const store = useMeditationStore();
+
+const days: Day[] = reactive([]);
+
+function saveDaysToLocalStorage() {
+  const localDaysObject: LocalStorageDays = { days: days };
+  localStorage.setItem("days", JSON.stringify(localDaysObject));
+}
+function getDaysFromLocalStorage() {
+  const localDays = localStorage.getItem("days");
+  if (localDays) {
+    const localDaysObject: Day[] = JSON.parse(localDays).days;
+    localDaysObject.forEach((day: Day) => days.push(day));
+  }
+}
+function addDay(dayToAdd: Date) {
+  const foundDays = days.filter((day) => {
+    if (
+      day.date.day === dayToAdd.day &&
+      day.date.month === dayToAdd.month &&
+      day.date.year === dayToAdd.year
+    ) {
+      return true;
+    }
+    return false;
+  });
+  if (foundDays.length === 0) {
+    days.push(JSON.parse(JSON.stringify(dayToAdd)));
+    saveDaysToLocalStorage();
+    changeShowDayFormTrigger();
+  }
+}
+
+const showDaysForm: Ref<boolean> = ref(false);
+
+onMounted(() => {
+  getDaysFromLocalStorage();
+});
+
+function changeShowDayFormTrigger() {
+  showDaysForm.value = !showDaysForm.value;
+}
+
+function addMeditation(index: number) {
+  days[index].meditations.push(JSON.parse(JSON.stringify(store.meditation)));
+  store.resetMeditation();
+  console.log(store.meditation);
+  saveDaysToLocalStorage();
+}
 </script>
 
 <style scoped>

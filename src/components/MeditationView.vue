@@ -9,13 +9,12 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "MeditationView",
-  props: {
-    meditation: Object,
-  },
-};
+<script setup lang="ts">
+import type { Meditation } from "@/types";
+
+const props = defineProps<{
+  meditation: Meditation;
+}>();
 </script>
 
 <style scoped></style>

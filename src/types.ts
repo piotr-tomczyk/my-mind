@@ -16,3 +16,6 @@ export interface Template {
   title: string;
   content: string;
 }
+export interface LocalStorageDays {
+  days: Day[];
+}
